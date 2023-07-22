@@ -1,0 +1,72 @@
+
+package org.alinuswe.response;
+
+
+
+import io.netty.handler.codec.http.HttpResponseStatus;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+
+
+@Getter
+@Setter
+@ToString
+
+public class Response<T> {
+
+    private int statusCode;
+    private String message;
+    boolean success = false;
+    /**
+     * Can be a hashmap or list Spring will render a nice Json response :-)
+     *
+     */
+    private T data;
+
+    public Response(int statCode, String statusDesc) {
+        statusCode = statCode;
+        message = statusDesc;
+
+        if (statusCode == HttpResponseStatus.OK.code()) {
+            success = true;
+        }
+
+    }
+
+    public Response() {
+    }
+
+    public static <T> Response<T> failedResponse(String message) {
+        return failedResponse(HttpResponseStatus.BAD_REQUEST.code(), message, null);
+    }
+
+    public static <T> Response<T> failedResponse(int statusCode, String message) {
+        return failedResponse(statusCode, message, null);
+    }
+
+    public static <T> Response<T> failedResponse(int statusCode, String message, T data) {
+        Response<T> response = new Response<>(statusCode, message);
+        response.setSuccess(false);
+        response.setData(data);
+        return response;
+    }
+
+    public static <T> Response<T> successfulResponse(String message, T data) {
+        return successfulResponse(HttpResponseStatus.OK.code(), message, data);
+    }
+
+    public static <T> Response<T> successfulResponse(String message) {
+        return successfulResponse(HttpResponseStatus.OK.code(), message, null);
+    }
+
+    public static <T> Response<T> successfulResponse(int statusCode, String message, T data) {
+        Response<T> response = new Response<>(statusCode, message);
+        response.setSuccess(true);
+        response.setData(data);
+        return response;
+    }
+
+}
